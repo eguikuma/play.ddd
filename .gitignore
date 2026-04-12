@@ -1,0 +1,24 @@
+# Dependencies
+backend/vendor/
+node_modules/
+
+# Environment
+backend/.env
+
+# IDE
+.idea/
+.vscode/
+
+# Documents
+docs/
+*.md
+
+# OS
+.DS_Store
+
+# Laravel
+backend/storage/*.key
+backend/storage/framework/cache/data/*
+backend/storage/framework/sessions/*
+backend/storage/framework/views/*
+backend/bootstrap/cache/*

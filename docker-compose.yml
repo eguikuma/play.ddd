@@ -1,0 +1,47 @@
+services:
+  app:
+    build:
+      context: ./containers/app
+    volumes:
+      - ./backend:/var/www
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - den
+
+  web:
+    build:
+      context: ./containers/web
+    ports:
+      - "80:80"
+    depends_on:
+      - app
+    networks:
+      - den
+
+  db:
+    image: mysql:8.4
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: den
+      MYSQL_USER: den
+      MYSQL_PASSWORD: den
+    ports:
+      - "3306:3306"
+    volumes:
+      - db-data:/var/lib/mysql
+      - ./containers/db/my.cnf:/etc/mysql/conf.d/my.cnf
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - den
+
+volumes:
+  db-data:
+
+networks:
+  den:
