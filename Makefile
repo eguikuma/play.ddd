@@ -28,5 +28,11 @@ backend\:format\:fix:
 backend\:test:
 	docker compose exec app ./vendor/bin/phpunit
 
+backend\:migrate:
+	docker compose exec app php artisan migrate
+
 backend\:seed:
 	docker compose exec app php artisan db:seed
+
+backend\:fresh:
+	docker compose exec app php artisan migrate:fresh --seed
