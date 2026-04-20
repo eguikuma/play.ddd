@@ -35,19 +35,19 @@ class SourceUrlTest extends TestCase
     #[Test]
     public function 同じURLは等しい(): void
     {
-        $url1 = new SourceUrl('https://example.com/rss');
-        $url2 = new SourceUrl('https://example.com/rss');
+        $sourceUrl = new SourceUrl('https://example.com/rss');
+        $sameSourceUrl = new SourceUrl('https://example.com/rss');
 
-        $this->assertTrue($url1->equals($url2));
+        $this->assertTrue($sourceUrl->equals($sameSourceUrl));
     }
 
     #[Test]
     public function 異なるURLは等しくない(): void
     {
-        $url1 = new SourceUrl('https://example.com/rss');
-        $url2 = new SourceUrl('https://other.com/rss');
+        $sourceUrl = new SourceUrl('https://example.com/rss');
+        $otherSourceUrl = new SourceUrl('https://other.com/rss');
 
-        $this->assertFalse($url1->equals($url2));
+        $this->assertFalse($sourceUrl->equals($otherSourceUrl));
     }
 
     #[Test]

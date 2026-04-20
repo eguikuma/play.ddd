@@ -19,19 +19,19 @@ class ContentFingerprintTest extends TestCase
     #[Test]
     public function 同じURLからは同じフィンガープリントが生成される(): void
     {
-        $fp1 = ContentFingerprint::fromUrl('https://example.com/article/1');
-        $fp2 = ContentFingerprint::fromUrl('https://example.com/article/1');
+        $fingerprint = ContentFingerprint::fromUrl('https://example.com/article/1');
+        $sameFingerprint = ContentFingerprint::fromUrl('https://example.com/article/1');
 
-        $this->assertTrue($fp1->equals($fp2));
+        $this->assertTrue($fingerprint->equals($sameFingerprint));
     }
 
     #[Test]
     public function 異なるURLからは異なるフィンガープリントが生成される(): void
     {
-        $fp1 = ContentFingerprint::fromUrl('https://example.com/article/1');
-        $fp2 = ContentFingerprint::fromUrl('https://example.com/article/2');
+        $fingerprint = ContentFingerprint::fromUrl('https://example.com/article/1');
+        $otherFingerprint = ContentFingerprint::fromUrl('https://example.com/article/2');
 
-        $this->assertFalse($fp1->equals($fp2));
+        $this->assertFalse($fingerprint->equals($otherFingerprint));
     }
 
     #[Test]

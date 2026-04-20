@@ -15,7 +15,7 @@ class HttpContentFetcher implements ContentFetcher
 
         if ($response->failed()) {
             throw new \RuntimeException(
-                "コンテンツの取得に失敗しました: {$url} (HTTP {$response->status()})",
+                "{$url} の取得に失敗しました (HTTP {$response->status()})",
             );
         }
 

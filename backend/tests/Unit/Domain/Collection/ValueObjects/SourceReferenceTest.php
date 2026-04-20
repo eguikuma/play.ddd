@@ -11,9 +11,9 @@ class SourceReferenceTest extends TestCase
     #[Test]
     public function ソース参照を作成できる(): void
     {
-        $ref = new SourceReference('source-123');
+        $sourceReference = new SourceReference('source-123');
 
-        $this->assertSame('source-123', $ref->value());
+        $this->assertSame('source-123', $sourceReference->value());
     }
 
     #[Test]
@@ -27,18 +27,18 @@ class SourceReferenceTest extends TestCase
     #[Test]
     public function 同じ値のソース参照は等しい(): void
     {
-        $ref1 = new SourceReference('source-123');
-        $ref2 = new SourceReference('source-123');
+        $sourceReference = new SourceReference('source-123');
+        $sameReference = new SourceReference('source-123');
 
-        $this->assertTrue($ref1->equals($ref2));
+        $this->assertTrue($sourceReference->equals($sameReference));
     }
 
     #[Test]
     public function 異なる値のソース参照は等しくない(): void
     {
-        $ref1 = new SourceReference('source-123');
-        $ref2 = new SourceReference('source-456');
+        $sourceReference = new SourceReference('source-123');
+        $otherReference = new SourceReference('source-456');
 
-        $this->assertFalse($ref1->equals($ref2));
+        $this->assertFalse($sourceReference->equals($otherReference));
     }
 }

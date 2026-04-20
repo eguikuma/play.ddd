@@ -19,19 +19,19 @@ class SourceIdTest extends TestCase
     #[Test]
     public function 同じ値のソースIDは等しい(): void
     {
-        $id1 = new SourceId('abc-123');
-        $id2 = new SourceId('abc-123');
+        $sourceId = new SourceId('abc-123');
+        $sameSourceId = new SourceId('abc-123');
 
-        $this->assertTrue($id1->equals($id2));
+        $this->assertTrue($sourceId->equals($sameSourceId));
     }
 
     #[Test]
     public function 異なる値のソースIDは等しくない(): void
     {
-        $id1 = new SourceId('abc-123');
-        $id2 = new SourceId('def-456');
+        $sourceId = new SourceId('abc-123');
+        $otherSourceId = new SourceId('def-456');
 
-        $this->assertFalse($id1->equals($id2));
+        $this->assertFalse($sourceId->equals($otherSourceId));
     }
 
     #[Test]

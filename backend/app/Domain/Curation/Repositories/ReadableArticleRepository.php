@@ -18,5 +18,5 @@ interface ReadableArticleRepository
     /**
      * @return ReadableArticle[]
      */
-    public function findUnread(?Label $labelFilter = null): array;
+    public function findUnread(?Label $label = null): array;
 }
