@@ -8,9 +8,9 @@ use App\Domain\Collection\ValueObjects\ArticleBody;
 use App\Domain\Collection\ValueObjects\ArticleId;
 use App\Domain\Collection\ValueObjects\ArticleTitle;
 use App\Domain\Collection\ValueObjects\ArticleUrl;
+use App\Domain\Collection\ValueObjects\CollectionMethod;
 use App\Domain\Collection\ValueObjects\ContentFingerprint;
 use App\Domain\Collection\ValueObjects\SourceReference;
-use App\Domain\Tracking\ValueObjects\SourceKind;
 
 class MysqlArticleRepository implements ArticleRepository
 {
@@ -20,7 +20,7 @@ class MysqlArticleRepository implements ArticleRepository
             ['id' => $article->id()->value()],
             [
                 'source_id' => $article->sourceReference()->value(),
-                'source_kind' => $article->sourceKind()->value,
+                'source_kind' => $article->collectionMethod()->value,
                 'title' => $article->title()->value(),
                 'url' => $article->url()->value(),
                 'body' => $article->body()->value(),
@@ -49,7 +49,7 @@ class MysqlArticleRepository implements ArticleRepository
         return Article::reconstruct(
             new ArticleId($article->id),
             new SourceReference($article->source_id),
-            SourceKind::from($article->source_kind),
+            CollectionMethod::from($article->source_kind),
             new ArticleTitle($article->title),
             new ArticleUrl($article->url),
             new ArticleBody($article->body ?? ''),

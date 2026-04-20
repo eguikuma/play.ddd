@@ -12,11 +12,13 @@ use App\Domain\Collection\Services\ContentParser;
 use App\Domain\Collection\ValueObjects\ArticleBody;
 use App\Domain\Collection\ValueObjects\ArticleTitle;
 use App\Domain\Collection\ValueObjects\ArticleUrl;
+use App\Domain\Collection\ValueObjects\CollectionMethod;
 use App\Domain\Collection\ValueObjects\ContentFingerprint;
 use App\Domain\Collection\ValueObjects\SourceReference;
 use App\Domain\Shared\Events\EventDispatcher;
 use App\Domain\Tracking\Repositories\SourceRepository;
 use App\Domain\Tracking\ValueObjects\SourceId;
+use App\Domain\Tracking\ValueObjects\SourceKind;
 
 class CollectSource
 {
@@ -66,9 +68,13 @@ class CollectSource
                     continue;
                 }
 
+                $collectionMethod = match ($source->kind()) {
+                    SourceKind::Rss => CollectionMethod::Rss,
+                };
+
                 $article = Article::collect(
                     $sourceRef,
-                    $source->kind(),
+                    $collectionMethod,
                     new ArticleTitle($entry->title),
                     new ArticleUrl($entry->url),
                     new ArticleBody($entry->body),
@@ -81,7 +87,7 @@ class CollectSource
                 $this->eventDispatcher->dispatch(new ArticleCollected(
                     articleId: $article->id()->value(),
                     sourceReference: $sourceRef->value(),
-                    sourceKind: $source->kind(),
+                    collectionMethod: $collectionMethod,
                     title: $entry->title,
                     url: $entry->url,
                     body: $article->body()->value(),

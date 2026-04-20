@@ -3,12 +3,12 @@
 namespace Tests\Unit\UseCases\Curation;
 
 use App\Domain\Collection\Events\ArticleCollected;
+use App\Domain\Collection\ValueObjects\CollectionMethod;
 use App\Domain\Curation\Aggregates\ClassificationRule;
 use App\Domain\Curation\Services\ArticleClassifier;
 use App\Domain\Curation\ValueObjects\Label;
 use App\Domain\Curation\ValueObjects\MatchField;
 use App\Domain\Curation\ValueObjects\RulePattern;
-use App\Domain\Tracking\ValueObjects\SourceKind;
 use App\Infrastructure\Persistence\Curation\InMemoryClassificationRuleRepository;
 use App\Infrastructure\Persistence\Curation\InMemoryReadableArticleRepository;
 use App\UseCases\Curation\ClassifyArticleOnCollected;
@@ -29,7 +29,7 @@ class ClassifyArticleOnCollectedTest extends TestCase
         $event = new ArticleCollected(
             articleId: 'article-1',
             sourceReference: 'source-1',
-            sourceKind: SourceKind::Rss,
+            collectionMethod: CollectionMethod::Rss,
             title: 'Laravel 12 Released',
             url: 'https://example.com/laravel-12',
             body: 'New features in Laravel 12.',
@@ -62,7 +62,7 @@ class ClassifyArticleOnCollectedTest extends TestCase
         $event = new ArticleCollected(
             articleId: 'article-1',
             sourceReference: 'source-1',
-            sourceKind: SourceKind::Rss,
+            collectionMethod: CollectionMethod::Rss,
             title: 'Laravel 12 Released',
             url: 'https://example.com/laravel-12',
             body: 'New features.',
@@ -89,7 +89,7 @@ class ClassifyArticleOnCollectedTest extends TestCase
         $event = new ArticleCollected(
             articleId: 'article-1',
             sourceReference: 'source-1',
-            sourceKind: SourceKind::Rss,
+            collectionMethod: CollectionMethod::Rss,
             title: 'Test',
             url: 'https://example.com/test',
             body: 'Body.',

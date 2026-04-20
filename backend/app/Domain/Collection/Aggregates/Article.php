@@ -6,9 +6,9 @@ use App\Domain\Collection\ValueObjects\ArticleBody;
 use App\Domain\Collection\ValueObjects\ArticleId;
 use App\Domain\Collection\ValueObjects\ArticleTitle;
 use App\Domain\Collection\ValueObjects\ArticleUrl;
+use App\Domain\Collection\ValueObjects\CollectionMethod;
 use App\Domain\Collection\ValueObjects\ContentFingerprint;
 use App\Domain\Collection\ValueObjects\SourceReference;
-use App\Domain\Tracking\ValueObjects\SourceKind;
 
 /**
  * 収集された記事の集約ルート
@@ -21,7 +21,7 @@ class Article
     private function __construct(
         private readonly ArticleId $id,
         private readonly SourceReference $sourceReference,
-        private readonly SourceKind $sourceKind,
+        private readonly CollectionMethod $collectionMethod,
         private readonly ArticleTitle $title,
         private readonly ArticleUrl $url,
         private readonly ArticleBody $body,
@@ -35,7 +35,7 @@ class Article
      */
     public static function collect(
         SourceReference $sourceReference,
-        SourceKind $sourceKind,
+        CollectionMethod $collectionMethod,
         ArticleTitle $title,
         ArticleUrl $url,
         ArticleBody $body,
@@ -44,7 +44,7 @@ class Article
         return new self(
             id: ArticleId::generate(),
             sourceReference: $sourceReference,
-            sourceKind: $sourceKind,
+            collectionMethod: $collectionMethod,
             title: $title,
             url: $url,
             body: $body,
@@ -60,7 +60,7 @@ class Article
     public static function reconstruct(
         ArticleId $id,
         SourceReference $sourceReference,
-        SourceKind $sourceKind,
+        CollectionMethod $collectionMethod,
         ArticleTitle $title,
         ArticleUrl $url,
         ArticleBody $body,
@@ -71,7 +71,7 @@ class Article
         return new self(
             id: $id,
             sourceReference: $sourceReference,
-            sourceKind: $sourceKind,
+            collectionMethod: $collectionMethod,
             title: $title,
             url: $url,
             body: $body,
@@ -91,9 +91,9 @@ class Article
         return $this->sourceReference;
     }
 
-    public function sourceKind(): SourceKind
+    public function collectionMethod(): CollectionMethod
     {
-        return $this->sourceKind;
+        return $this->collectionMethod;
     }
 
     public function title(): ArticleTitle

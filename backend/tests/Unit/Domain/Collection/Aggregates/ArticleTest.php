@@ -7,9 +7,9 @@ use App\Domain\Collection\ValueObjects\ArticleBody;
 use App\Domain\Collection\ValueObjects\ArticleId;
 use App\Domain\Collection\ValueObjects\ArticleTitle;
 use App\Domain\Collection\ValueObjects\ArticleUrl;
+use App\Domain\Collection\ValueObjects\CollectionMethod;
 use App\Domain\Collection\ValueObjects\ContentFingerprint;
 use App\Domain\Collection\ValueObjects\SourceReference;
-use App\Domain\Tracking\ValueObjects\SourceKind;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
@@ -20,7 +20,7 @@ class ArticleTest extends TestCase
     {
         $article = Article::collect(
             new SourceReference('source-123'),
-            SourceKind::Rss,
+            CollectionMethod::Rss,
             new ArticleTitle('Laravel 12 Released'),
             new ArticleUrl('https://laravel-news.com/laravel-12'),
             new ArticleBody('Laravel 12 has been released with new features.'),
@@ -29,7 +29,7 @@ class ArticleTest extends TestCase
 
         $this->assertNotEmpty($article->id()->value());
         $this->assertSame('source-123', $article->sourceReference()->value());
-        $this->assertSame(SourceKind::Rss, $article->sourceKind());
+        $this->assertSame(CollectionMethod::Rss, $article->collectionMethod());
         $this->assertSame('Laravel 12 Released', $article->title()->value());
         $this->assertSame('https://laravel-news.com/laravel-12', $article->url()->value());
         $this->assertNotEmpty($article->fingerprint()->value());
@@ -41,7 +41,7 @@ class ArticleTest extends TestCase
     {
         $article1 = Article::collect(
             new SourceReference('source-123'),
-            SourceKind::Rss,
+            CollectionMethod::Rss,
             new ArticleTitle('Title 1'),
             new ArticleUrl('https://example.com/same-article'),
             new ArticleBody('Body 1'),
@@ -50,7 +50,7 @@ class ArticleTest extends TestCase
 
         $article2 = Article::collect(
             new SourceReference('source-456'),
-            SourceKind::Rss,
+            CollectionMethod::Rss,
             new ArticleTitle('Title 2'),
             new ArticleUrl('https://example.com/same-article'),
             new ArticleBody('Body 2'),
@@ -66,7 +66,7 @@ class ArticleTest extends TestCase
         $article = Article::reconstruct(
             new ArticleId('article-id'),
             new SourceReference('source-123'),
-            SourceKind::Rss,
+            CollectionMethod::Rss,
             new ArticleTitle('Test Article'),
             new ArticleUrl('https://example.com/test'),
             new ArticleBody('Test body'),
