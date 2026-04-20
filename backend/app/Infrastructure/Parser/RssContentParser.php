@@ -10,7 +10,11 @@ class RssContentParser implements ContentParser
 {
     public function parse(string $rawContent): array
     {
-        $feed = Reader::importString($rawContent);
+        try {
+            $feed = Reader::importString($rawContent);
+        } catch (\Throwable) {
+            throw new \RuntimeException('フィードの解析に失敗しました');
+        }
         $entries = [];
 
         foreach ($feed as $entry) {

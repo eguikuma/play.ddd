@@ -119,4 +119,13 @@ XML;
 
         $this->assertSame('Bold text', $entries[0]->body);
     }
+
+    #[Test]
+    public function 不正なコンテンツではフィードの解析に失敗する(): void
+    {
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('フィードの解析に失敗しました');
+
+        $this->parser->parse('<html><body>Not a feed</body></html>');
+    }
 }
