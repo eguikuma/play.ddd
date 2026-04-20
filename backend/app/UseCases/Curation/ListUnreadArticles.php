@@ -15,10 +15,10 @@ class ListUnreadArticles
     /**
      * @return ReadableArticle[]
      */
-    public function execute(?string $label = null): array
+    public function execute(?string $rawLabel = null): array
     {
-        $labelFilter = $label !== null ? new Label($label) : null;
+        $label = $rawLabel !== null ? new Label($rawLabel) : null;
 
-        return $this->readableArticleRepository->findUnread($labelFilter);
+        return $this->readableArticleRepository->findUnread($label);
     }
 }

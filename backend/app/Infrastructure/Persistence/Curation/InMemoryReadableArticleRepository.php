@@ -22,14 +22,14 @@ class InMemoryReadableArticleRepository implements ReadableArticleRepository
         return $this->articles[$id->value()] ?? null;
     }
 
-    public function findUnread(?Label $labelFilter = null): array
+    public function findUnread(?Label $label = null): array
     {
-        $unread = array_filter($this->articles, fn (ReadableArticle $readableArticle) => $readableArticle->isUnread());
+        $unread = array_filter($this->articles, fn (ReadableArticle $article) => $article->isUnread());
 
-        if ($labelFilter !== null) {
-            $unread = array_filter($unread, function (ReadableArticle $readableArticle) use ($labelFilter) {
-                foreach ($readableArticle->labels() as $label) {
-                    if ($label->equals($labelFilter)) {
+        if ($label !== null) {
+            $unread = array_filter($unread, function (ReadableArticle $article) use ($label) {
+                foreach ($article->labels() as $attachedLabel) {
+                    if ($attachedLabel->equals($label)) {
                         return true;
                     }
                 }

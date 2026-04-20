@@ -31,39 +31,39 @@ class MysqlReadableArticleRepository implements ReadableArticleRepository
 
     public function findById(ReadableArticleId $id): ?ReadableArticle
     {
-        $record = EloquentReadableArticle::with('labels')->find($id->value());
+        $article = EloquentReadableArticle::with('labels')->find($id->value());
 
-        return $record ? $this->toDomain($record) : null;
+        return $article ? $this->toDomain($article) : null;
     }
 
-    public function findUnread(?Label $labelFilter = null): array
+    public function findUnread(?Label $label = null): array
     {
         $query = EloquentReadableArticle::with('labels')
             ->where('reading_status', ReadingStatus::Unread->value);
 
-        if ($labelFilter !== null) {
-            $query->whereHas('labels', fn ($query) => $query->where('value', $labelFilter->value()));
+        if ($label !== null) {
+            $query->whereHas('labels', fn ($query) => $query->where('value', $label->value()));
         }
 
         return $query->get()
-            ->map(fn (EloquentReadableArticle $record) => $this->toDomain($record))
+            ->map(fn (EloquentReadableArticle $article) => $this->toDomain($article))
             ->all();
     }
 
-    private function toDomain(EloquentReadableArticle $record): ReadableArticle
+    private function toDomain(EloquentReadableArticle $article): ReadableArticle
     {
-        $labels = $record->labels->map(fn ($labelRecord) => new Label($labelRecord->value))->all();
+        $labels = $article->labels->map(fn ($label) => new Label($label->value))->all();
 
         return ReadableArticle::reconstruct(
-            new ReadableArticleId($record->id),
-            $record->source_id,
-            $record->title,
-            $record->url,
-            $record->body ?? '',
-            $record->published_at ? new \DateTimeImmutable($record->published_at) : null,
-            ReadingStatus::from($record->reading_status),
-            (bool) $record->bookmarked,
-            $record->read_at ? new \DateTimeImmutable($record->read_at) : null,
+            new ReadableArticleId($article->id),
+            $article->source_id,
+            $article->title,
+            $article->url,
+            $article->body ?? '',
+            $article->published_at ? new \DateTimeImmutable($article->published_at) : null,
+            ReadingStatus::from($article->reading_status),
+            (bool) $article->bookmarked,
+            $article->read_at ? new \DateTimeImmutable($article->read_at) : null,
             $labels,
         );
     }
