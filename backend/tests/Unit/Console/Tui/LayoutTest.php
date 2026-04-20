@@ -2,8 +2,10 @@
 
 namespace Tests\Unit\Console\Tui;
 
+use App\Console\Tui\Articles;
 use App\Console\Tui\Layout;
 use App\Console\Tui\Mode;
+use App\Console\Tui\Sources;
 use App\Console\Tui\State;
 use App\Domain\Curation\Aggregates\ReadableArticle;
 use App\Infrastructure\Persistence\Curation\InMemoryReadableArticleRepository;
@@ -50,18 +52,22 @@ class LayoutTest extends TestCase
         $collectAll = $this->createStub(CollectAll::class);
         $collectAll->method('execute')->willReturn([]);
 
-        $this->state = new State(
-            listUnreadArticles: new ListUnreadArticles($repository),
-            markAsRead: new MarkAsRead($repository),
-            bookmarkArticle: new BookmarkArticle($repository),
-            unbookmarkArticle: new UnbookmarkArticle($repository),
-            addSource: new AddSource($sourceRepository),
-            listSources: new ListSources($sourceRepository),
-            removeSource: new RemoveSource($sourceRepository),
-            pauseSource: new PauseSource($sourceRepository),
-            resumeSource: new ResumeSource($sourceRepository),
-            collectAll: $collectAll,
+        $articles = new Articles(
+            new ListUnreadArticles($repository),
+            new MarkAsRead($repository),
+            new BookmarkArticle($repository),
+            new UnbookmarkArticle($repository),
         );
+
+        $sources = new Sources(
+            new AddSource($sourceRepository),
+            new ListSources($sourceRepository),
+            new RemoveSource($sourceRepository),
+            new PauseSource($sourceRepository),
+            new ResumeSource($sourceRepository),
+        );
+
+        $this->state = new State($articles, $sources, $collectAll);
         $this->state->articles->load(null);
 
         $this->layout = new Layout($this->state, 120, 40);

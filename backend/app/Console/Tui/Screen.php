@@ -2,16 +2,6 @@
 
 namespace App\Console\Tui;
 
-use App\UseCases\Collection\CollectAll;
-use App\UseCases\Curation\BookmarkArticle;
-use App\UseCases\Curation\ListUnreadArticles;
-use App\UseCases\Curation\MarkAsRead;
-use App\UseCases\Curation\UnbookmarkArticle;
-use App\UseCases\Tracking\AddSource;
-use App\UseCases\Tracking\ListSources;
-use App\UseCases\Tracking\PauseSource;
-use App\UseCases\Tracking\RemoveSource;
-use App\UseCases\Tracking\ResumeSource;
 use PhpTui\Term\Actions;
 use PhpTui\Term\Terminal as PhpTermTerminal;
 use PhpTui\Term\TerminalInformation\Size;
@@ -33,36 +23,13 @@ class Screen
 
     private readonly EventHandler $handler;
 
-    public function __construct(
-        ListUnreadArticles $listUnreadArticles,
-        MarkAsRead $markAsRead,
-        BookmarkArticle $bookmarkArticle,
-        UnbookmarkArticle $unbookmarkArticle,
-        AddSource $addSource,
-        ListSources $listSources,
-        RemoveSource $removeSource,
-        PauseSource $pauseSource,
-        ResumeSource $resumeSource,
-        CollectAll $collectAll,
-    ) {
+    public function __construct(State $state)
+    {
         $this->terminal = PhpTermTerminal::new();
         $size = $this->terminal->info(Size::class);
-        $terminalWidth = max(40, $size?->cols ?? 120);
-        $terminalHeight = max(10, $size?->lines ?? 40);
 
-        $this->state = new State(
-            $listUnreadArticles,
-            $markAsRead,
-            $bookmarkArticle,
-            $unbookmarkArticle,
-            $addSource,
-            $listSources,
-            $removeSource,
-            $pauseSource,
-            $resumeSource,
-            $collectAll,
-        );
-        $this->layout = new Layout($this->state, $terminalWidth, $terminalHeight);
+        $this->state = $state;
+        $this->layout = new Layout($this->state, max(40, $size?->cols ?? 120), max(10, $size?->lines ?? 40));
         $this->handler = new EventHandler($this->state);
     }
 

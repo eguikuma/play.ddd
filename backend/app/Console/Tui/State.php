@@ -3,15 +3,6 @@
 namespace App\Console\Tui;
 
 use App\UseCases\Collection\CollectAll;
-use App\UseCases\Curation\BookmarkArticle;
-use App\UseCases\Curation\ListUnreadArticles;
-use App\UseCases\Curation\MarkAsRead;
-use App\UseCases\Curation\UnbookmarkArticle;
-use App\UseCases\Tracking\AddSource;
-use App\UseCases\Tracking\ListSources;
-use App\UseCases\Tracking\PauseSource;
-use App\UseCases\Tracking\RemoveSource;
-use App\UseCases\Tracking\ResumeSource;
 
 /**
  * TUI 画面の全ミュータブル状態と状態遷移メソッドを管理する
@@ -37,19 +28,12 @@ class State
     private Mode $origin = Mode::Articles;
 
     public function __construct(
-        ListUnreadArticles $listUnreadArticles,
-        MarkAsRead $markAsRead,
-        BookmarkArticle $bookmarkArticle,
-        UnbookmarkArticle $unbookmarkArticle,
-        AddSource $addSource,
-        ListSources $listSources,
-        RemoveSource $removeSource,
-        PauseSource $pauseSource,
-        ResumeSource $resumeSource,
+        Articles $articles,
+        Sources $sources,
         private readonly CollectAll $collectAll,
     ) {
-        $this->articles = new Articles($listUnreadArticles, $markAsRead, $bookmarkArticle, $unbookmarkArticle);
-        $this->sources = new Sources($addSource, $listSources, $removeSource, $pauseSource, $resumeSource);
+        $this->articles = $articles;
+        $this->sources = $sources;
         $this->preview = new Preview;
         $this->prompt = new Prompt;
     }

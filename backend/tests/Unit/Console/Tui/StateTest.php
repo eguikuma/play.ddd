@@ -2,7 +2,9 @@
 
 namespace Tests\Unit\Console\Tui;
 
+use App\Console\Tui\Articles;
 use App\Console\Tui\Mode;
+use App\Console\Tui\Sources;
 use App\Console\Tui\State;
 use App\Domain\Curation\Aggregates\ReadableArticle;
 use App\Infrastructure\Persistence\Curation\InMemoryReadableArticleRepository;
@@ -36,18 +38,22 @@ class StateTest extends TestCase
         $collectAll = $this->createStub(CollectAll::class);
         $collectAll->method('execute')->willReturn([]);
 
-        $this->state = new State(
-            listUnreadArticles: new ListUnreadArticles($this->articleRepository),
-            markAsRead: new MarkAsRead($this->articleRepository),
-            bookmarkArticle: new BookmarkArticle($this->articleRepository),
-            unbookmarkArticle: new UnbookmarkArticle($this->articleRepository),
-            addSource: new AddSource($this->sourceRepository),
-            listSources: new ListSources($this->sourceRepository),
-            removeSource: new RemoveSource($this->sourceRepository),
-            pauseSource: new PauseSource($this->sourceRepository),
-            resumeSource: new ResumeSource($this->sourceRepository),
-            collectAll: $collectAll,
+        $articles = new Articles(
+            new ListUnreadArticles($this->articleRepository),
+            new MarkAsRead($this->articleRepository),
+            new BookmarkArticle($this->articleRepository),
+            new UnbookmarkArticle($this->articleRepository),
         );
+
+        $sources = new Sources(
+            new AddSource($this->sourceRepository),
+            new ListSources($this->sourceRepository),
+            new RemoveSource($this->sourceRepository),
+            new PauseSource($this->sourceRepository),
+            new ResumeSource($this->sourceRepository),
+        );
+
+        $this->state = new State($articles, $sources, $collectAll);
     }
 
     #[Test]

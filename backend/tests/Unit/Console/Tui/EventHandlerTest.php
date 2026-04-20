@@ -2,8 +2,10 @@
 
 namespace Tests\Unit\Console\Tui;
 
+use App\Console\Tui\Articles;
 use App\Console\Tui\EventHandler;
 use App\Console\Tui\Mode;
+use App\Console\Tui\Sources;
 use App\Console\Tui\State;
 use App\Domain\Curation\Aggregates\ReadableArticle;
 use App\Infrastructure\Persistence\Curation\InMemoryReadableArticleRepository;
@@ -41,18 +43,22 @@ class EventHandlerTest extends TestCase
         $collectAll = $this->createStub(CollectAll::class);
         $collectAll->method('execute')->willReturn([]);
 
-        $this->state = new State(
-            listUnreadArticles: new ListUnreadArticles($this->repository),
-            markAsRead: new MarkAsRead($this->repository),
-            bookmarkArticle: new BookmarkArticle($this->repository),
-            unbookmarkArticle: new UnbookmarkArticle($this->repository),
-            addSource: new AddSource($sourceRepository),
-            listSources: new ListSources($sourceRepository),
-            removeSource: new RemoveSource($sourceRepository),
-            pauseSource: new PauseSource($sourceRepository),
-            resumeSource: new ResumeSource($sourceRepository),
-            collectAll: $collectAll,
+        $articles = new Articles(
+            new ListUnreadArticles($this->repository),
+            new MarkAsRead($this->repository),
+            new BookmarkArticle($this->repository),
+            new UnbookmarkArticle($this->repository),
         );
+
+        $sources = new Sources(
+            new AddSource($sourceRepository),
+            new ListSources($sourceRepository),
+            new RemoveSource($sourceRepository),
+            new PauseSource($sourceRepository),
+            new ResumeSource($sourceRepository),
+        );
+
+        $this->state = new State($articles, $sources, $collectAll);
 
         $this->handler = new EventHandler($this->state);
     }
