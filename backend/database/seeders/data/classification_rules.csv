@@ -1,0 +1,4 @@
+id,pattern,is_regex,label,match_field
+019d0000-0003-7000-8000-000000000001,Laravel,false,laravel,title
+019d0000-0003-7000-8000-000000000002,PHP,false,php,content
+019d0000-0003-7000-8000-000000000003,Claude,false,ai,title

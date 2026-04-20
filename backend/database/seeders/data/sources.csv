@@ -1,0 +1,5 @@
+id,name,url,status
+019d0000-0001-7000-8000-000000000001,Zenn トレンド,https://zenn.dev/feed,active
+019d0000-0001-7000-8000-000000000002,Laravel News,https://laravel-news.com/feed,active
+019d0000-0001-7000-8000-000000000003,はてなブックマーク テクノロジー,https://b.hatena.ne.jp/hotentry/it.rss,active
+019d0000-0001-7000-8000-000000000004,GitHub Blog,https://github.blog/feed/,paused

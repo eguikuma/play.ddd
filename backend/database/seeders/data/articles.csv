@@ -1,0 +1,109 @@
+id,source_id,title,url,body,published_at,reading_status,bookmarked
+019d0000-0002-7000-8000-000000000001,019d0000-0001-7000-8000-000000000001,Claude Code + Obsidian — Daily Note を自動生成するフックの作り方,https://zenn.dev/example/articles/claude-code-obsidian,"Claude Code の hooks 機能を使って、Obsidian の Daily Note にその日の作業ログを自動追記する仕組みを作りました。
+
+設定は .claude/settings.json に書くだけ。PostToolUse フックで Edit ツールの実行後にスクリプトを走らせ、変更されたファイルのパスと差分サマリーを Markdown で追記します。
+
+Obsidian 側は Templater プラグインでテンプレートを用意しておけば、朝イチで前日のログが整理された状態で確認できます。
+
+フックの設定例を示します。settings.json の hooks セクションに PostToolUse イベントを追加し、対象ツールを Edit に限定します。スクリプトは Bash で書いており、jq でツールの出力をパースし、ファイルパスと変更行数を抽出します。
+
+Daily Note のテンプレートには「## 作業ログ」セクションを用意しておき、スクリプトがここに追記します。タイムスタンプ付きで記録されるので、後から時系列で振り返ることもできます。
+
+この仕組みの良いところは、Claude Code での作業を意識的に記録する必要がない点です。普通にコードを書いているだけで、勝手にログが蓄積されていきます。週次レビューの際にも、何をどれだけやったかが一目でわかります。",2026-04-10 09:00:00,unread,false
+019d0000-0002-7000-8000-000000000002,019d0000-0001-7000-8000-000000000001,Jujutsu はなぜ AI 時代に急に評価されはじめたのか,https://zenn.dev/example/articles/jujutsu-ai-era,"Git の代替として注目されている Jujutsu（jj）が、AI コーディングツールの普及とともに評価を高めています。その理由は、AI が生成する大量の変更を柔軟にリベース・分割・統合できる操作モデルにあります。",2026-04-09 14:30:00,unread,false
+019d0000-0002-7000-8000-000000000003,019d0000-0001-7000-8000-000000000001,RAGとAgentic Searchの違いを整理する,https://zenn.dev/example/articles/rag-vs-agentic-search,"RAG（Retrieval-Augmented Generation）とエージェント型検索は混同されやすいですが、アーキテクチャが異なります。
+
+RAG はクエリに対してベクトル検索で関連ドキュメントを取得し、コンテキストとして LLM に渡すパイプライン型のアプローチです。検索精度はエンベディングモデルとチャンク戦略に大きく依存します。
+
+エージェント型検索は、LLM 自身がツールを使って能動的に情報を探索します。grep、ファイル読み込み、Web 検索などを組み合わせ、必要な情報が見つかるまで繰り返します。
+
+Claude Code が初期の RAG ベースからエージェント型に移行した理由は、コードベース全体の文脈理解にはパイプライン型では不十分だったためです。ファイル間の依存関係や命名規則のパターンは、ベクトル類似度だけでは捕捉できません。
+
+実務では両者を組み合わせるハイブリッドアプローチも有効です。まず RAG で候補を絞り、エージェントが深掘りする二段構成が、精度とコストのバランスを取りやすい構成です。",2026-04-08 11:00:00,unread,false
+019d0000-0002-7000-8000-000000000004,019d0000-0001-7000-8000-000000000001,PHP 8.4 の新機能まとめ：プロパティフックからアシンメトリック可視性まで,https://zenn.dev/example/articles/php84-new-features,"PHP 8.4 がリリースされました。プロパティフック（Property Hooks）により、getter/setter をプロパティ定義に直接書けるようになりました。アシンメトリック可視性で、読み取りは public だが書き込みは private、といった制御が可能になります。",2026-04-07 08:00:00,read,false
+019d0000-0002-7000-8000-000000000005,019d0000-0001-7000-8000-000000000001,Playwright CLI + Claude Code で自律テストを書く,https://zenn.dev/example/articles/playwright-claude-code,"Playwright の CLI モードと Claude Code を組み合わせて、E2E テストの自動生成を試みました。Claude Code にブラウザ操作を指示し、Playwright が実際にページを操作。その結果を Claude Code が観察してアサーションを生成します。",2026-04-06 16:00:00,unread,false
+019d0000-0002-7000-8000-000000000006,019d0000-0001-7000-8000-000000000001,関数型って結局なんやねん！プログラマが知るべき本質,https://zenn.dev/example/articles/functional-programming-essence,"関数型プログラミングの本質は「副作用の制御」です。純粋関数は同じ入力に対して常に同じ出力を返し、外部状態を変更しません。
+
+PHP でも array_map、array_filter、array_reduce といった高階関数を活用することで、関数型のエッセンスを取り入れられます。Laravel の Collection もこの思想に基づいています。
+
+ただし PHP は純粋な関数型言語ではありません。無理に全てを関数型にするのではなく、状態変更が複雑になりやすい箇所に絞って適用するのが現実的です。イミュータブルな値オブジェクトはその好例です。
+
+DDD における値オブジェクトが不変であるべき理由も、実はこの関数型の考え方と通じています。状態を持たないオブジェクトは、テストが容易で、並行処理でも安全です。",2026-04-05 12:00:00,unread,false
+019d0000-0002-7000-8000-000000000007,019d0000-0001-7000-8000-000000000001,Docker Compose で開発環境を秒で立ち上げるテンプレート集,https://zenn.dev/example/articles/docker-compose-templates,"PHP + MySQL + Nginx の定番構成から、Redis・Mailpit・MinIO を含むフルスタック構成まで、コピペで使える Docker Compose テンプレートをまとめました。",2026-04-04 10:00:00,unread,false
+019d0000-0002-7000-8000-000000000008,019d0000-0001-7000-8000-000000000001,TDD は本当に開発速度を落とすのか？3年間の実践から見えたこと,https://zenn.dev/example/articles/tdd-three-years,"TDD を3年間続けた結果、初期の開発速度は確かに落ちますが、バグ修正とリグレッション対応の時間が劇的に減りました。トータルでは速くなるという実感です。",2026-04-03 09:00:00,read,false
+019d0000-0002-7000-8000-000000000009,019d0000-0001-7000-8000-000000000001,Neovim + LSP で PHP 開発環境を構築する 2026年版,https://zenn.dev/example/articles/neovim-lsp-php-2026,"Neovim の LSP 設定を一から解説します。
+
+まず phpactor と intelephense の比較から。phpactor は PHP ネイティブで動作が軽く、リファクタリング機能が充実しています。intelephense は型推論が強力で、大規模コードベースでの補完精度が高い。プロジェクトの規模と好みで選びましょう。
+
+次に treesitter によるシンタックスハイライト。正規表現ベースのハイライトと異なり、構文木を解析するため、ネストした文字列や複雑なテンプレートリテラルでも正確にハイライトされます。
+
+telescope でのファジー検索は、ファイル名だけでなく LSP シンボルやグレップ結果もファジーマッチできます。ripgrep との連携で大規模リポジトリでも高速です。
+
+最後に、PHP 固有の設定として、composer.json の autoload パスを LSP に認識させる設定が重要です。これを忘れると名前空間の解決が壊れます。",2026-04-02 14:00:00,unread,true
+019d0000-0002-7000-8000-000000000010,019d0000-0001-7000-8000-000000000002,Laravel 12 Is Now Released,https://laravel-news.com/laravel-12,"Laravel 12 has been released with a focus on developer experience improvements. The new starter kits have been completely redesigned with React, Vue, and Livewire options. WorkOS integration provides social authentication out of the box.",2026-04-11 06:00:00,unread,false
+019d0000-0002-7000-8000-000000000011,019d0000-0001-7000-8000-000000000002,Understanding Eloquent Performance: N+1 Detection in Laravel,https://laravel-news.com/eloquent-n-plus-one,"Laravel provides built-in N+1 query detection that can be enabled during development.
+
+By calling Model::preventLazyLoading() in your AppServiceProvider, Laravel will throw an exception whenever a lazy-loaded relationship is accessed. This forces you to use eager loading with with() or load().
+
+In production, you can log these violations instead of throwing exceptions using Model::handleLazyLoadingViolationUsing(). This approach lets you identify performance issues without breaking the application for end users.
+
+The key is to set up these checks early in development. N+1 queries are easy to introduce but hard to spot in code review. A list page rendering 50 items with 3 lazy-loaded relationships turns into 151 queries — something that only becomes apparent under realistic data volumes.
+
+Combined with Laravel Debugbar or Telescope, you can visualize the actual query count per request and set team-wide thresholds for acceptable query counts.",2026-04-10 15:00:00,unread,false
+019d0000-0002-7000-8000-000000000012,019d0000-0001-7000-8000-000000000002,Building CLI Tools with Laravel Zero,https://laravel-news.com/laravel-zero-cli,"Laravel Zero is a micro-framework optimized for building command-line applications using Laravel components. It ships with a built-in app:build command that compiles your CLI tool into a single PHAR file for easy distribution.",2026-04-09 12:00:00,unread,false
+019d0000-0002-7000-8000-000000000013,019d0000-0001-7000-8000-000000000002,Pest PHP 3.0: What Is New,https://laravel-news.com/pest-php-3,"Pest PHP 3.0 introduces mutation testing as a first-class feature. The --mutate flag automatically modifies your source code and reruns tests to verify they catch the mutations.",2026-04-08 09:30:00,unread,true
+019d0000-0002-7000-8000-000000000014,019d0000-0001-7000-8000-000000000002,Getting Started with Livewire 3 and Alpine.js,https://laravel-news.com/livewire-3-alpine,"Livewire 3 brings a complete rewrite with tighter Alpine.js integration. Wire:model is now deferred by default, and the new morph system provides smoother DOM updates.",2026-04-07 11:00:00,unread,false
+019d0000-0002-7000-8000-000000000015,019d0000-0001-7000-8000-000000000002,Laravel Reverb: Real-time WebSockets for Laravel,https://laravel-news.com/laravel-reverb,"Laravel Reverb is a first-party WebSocket server for Laravel applications. It integrates natively with Laravel Broadcasting and supports horizontal scaling with Redis.",2026-04-06 08:00:00,unread,false
+019d0000-0002-7000-8000-000000000016,019d0000-0001-7000-8000-000000000002,What's New in PHP 8.4 for Laravel Developers,https://laravel-news.com/php84-laravel,"PHP 8.4 introduces property hooks and asymmetric visibility that change how we write Laravel models.
+
+Property hooks can replace accessor and mutator methods in Eloquent models. Instead of defining getNameAttribute() and setNameAttribute(), you can declare get and set hooks directly on the property. This reduces boilerplate and keeps the logic co-located with the property definition.
+
+Asymmetric visibility is particularly useful for DTOs and value objects. You can expose a property as public for reading while restricting writes to the class itself. This eliminates the need for getter methods on immutable objects.
+
+The new without parentheses syntax for constructor calls enables fluent chaining: new Collection()->map(...) works without wrapping in parentheses. While small, this quality-of-life improvement makes code more readable.
+
+For Laravel specifically, these features align well with the framework's emphasis on expressiveness. Expect future Laravel versions to adopt property hooks in core classes.",2026-04-05 10:00:00,read,false
+019d0000-0002-7000-8000-000000000017,019d0000-0001-7000-8000-000000000002,A Deep Dive into Laravel Queues and Job Batching,https://laravel-news.com/queue-job-batching,"Laravel's job batching allows you to dispatch a group of jobs and perform actions after all jobs complete. Combined with rate limiting and retry strategies, it provides robust background processing.",2026-04-04 14:00:00,unread,false
+019d0000-0002-7000-8000-000000000018,019d0000-0001-7000-8000-000000000002,Laravel Pennant: Feature Flags Made Simple,https://laravel-news.com/laravel-pennant,"Laravel Pennant provides a lightweight feature flag system that integrates with Eloquent. Define features as classes, resolve them per-user, and clean up with artisan commands.",2026-04-03 07:00:00,unread,false
+019d0000-0002-7000-8000-000000000019,019d0000-0001-7000-8000-000000000003,世は大環境時代 - エージェントハーネスの設計パターン比較,https://example.com/hatena/agent-harness-patterns,"AI エージェントを制御するハーネスの設計パターンが多様化しています。
+
+ReAct パターンは思考と行動を交互に繰り返すシンプルな構成です。LLM が「考える」ステップと「行動する」ステップを明示的に分離することで、推論過程を追跡しやすくなります。
+
+Plan-and-Execute は先に計画を立ててから実行に移ります。複雑なタスクを小さなステップに分解し、各ステップを順に実行します。途中で計画を修正する「リプランニング」も組み込めます。
+
+Claude Code が採用する「ツール呼び出しループ」は、モデルが自律的にツールを選択し結果を観察するサイクルを回します。ユーザーの許可制御とフック機構で安全性を担保しています。
+
+どのパターンを選ぶかは、タスクの複雑さと求める自律度によります。単純な質問応答なら ReAct で十分ですが、大規模なコード変更にはツール呼び出しループが適しています。",2026-04-11 10:00:00,unread,false
+019d0000-0002-7000-8000-000000000020,019d0000-0001-7000-8000-000000000003,S3 Files で消えるアーキテクチャ層、残るドメイン層,https://example.com/hatena/s3-files-architecture,"AWS の S3 Files 機能により、ファイルシステムの抽象化レイヤーがさらに薄くなりました。ローカルファイルと同じ API で S3 上のファイルを操作できるため、インフラ層のアダプター実装が大幅に簡素化されます。",2026-04-10 18:00:00,unread,false
+019d0000-0002-7000-8000-000000000021,019d0000-0001-7000-8000-000000000003,転職してエクセルファイルを読み解いた話,https://example.com/hatena/excel-decoding,"前職のコードベースがなく、業務ロジックがエクセルマクロに閉じ込められていた。VBA を読み解きながらドメインモデルを抽出した体験記。",2026-04-09 20:00:00,unread,false
+019d0000-0002-7000-8000-000000000022,019d0000-0001-7000-8000-000000000003,Claude Team プラン完全ガイド 2026年4月版,https://example.com/hatena/claude-team-guide,"Claude Team プランの機能比較、料金体系、Pro/Team の使い分け基準を整理。Projects 機能とカスタム指示の活用法も解説します。",2026-04-08 15:00:00,unread,false
+019d0000-0002-7000-8000-000000000023,019d0000-0001-7000-8000-000000000003,チームに DDD を導入する際の現実的なステップ,https://example.com/hatena/ddd-adoption-steps,"いきなり戦術的パターンを導入するのではなく、まずユビキタス言語の整理から始める。
+
+最初のステップは、ドメインエキスパートと開発者が同じ言葉で会話できる状態を作ることです。用語集を作り、コード上の命名もそこに合わせます。
+
+次に境界づけられたコンテキストの合意を取ります。どこでモデルの意味が変わるかをチーム全体で議論し、コンテキストマップを描きます。
+
+実装パターン（集約、値オブジェクト、リポジトリ等）の導入はその後です。言語とコンテキストが定まっていない状態でパターンだけ入れても、的外れな抽象化になりがちです。
+
+段階的に進めることで、チームの理解度に合わせてペースを調整できます。全員が一度に全てを理解する必要はありません。",2026-04-07 12:00:00,unread,false
+019d0000-0002-7000-8000-000000000024,019d0000-0001-7000-8000-000000000003,Langfuse でLLMアプリのオブザーバビリティを確保する,https://example.com/hatena/langfuse-observability,"LLM アプリケーションのトレーシング・評価・コスト追跡を Langfuse で実現する方法を紹介。プロンプトのバージョン管理と A/B テストも可能です。",2026-04-06 09:00:00,unread,false
+019d0000-0002-7000-8000-000000000025,019d0000-0001-7000-8000-000000000003,Terraform で IaC を始めるための最初の一歩,https://example.com/hatena/terraform-first-step,"Terraform の基本概念（Provider / Resource / State）を 15 分で理解できるチュートリアル。AWS の VPC + EC2 を例に、plan → apply → destroy の流れを体験します。",2026-04-05 11:00:00,read,false
+019d0000-0002-7000-8000-000000000026,019d0000-0001-7000-8000-000000000003,OSS メンテナが燃え尽きないための仕組みづくり,https://example.com/hatena/oss-maintainer-burnout,"OSS メンテナの燃え尽き問題に対する構造的なアプローチ。Issue テンプレート、CODEOWNERS、GitHub Sponsors の活用で持続可能な運営を目指す。",2026-04-04 16:00:00,unread,false
+019d0000-0002-7000-8000-000000000027,019d0000-0001-7000-8000-000000000003,GraphQL vs REST：2026年の選択基準,https://example.com/hatena/graphql-vs-rest-2026,"GraphQL と REST の選択基準を改めて整理。フロントエンド主導の開発では GraphQL が有利だが、キャッシュ戦略やエラーハンドリングでは REST の方がシンプルという面も。",2026-04-03 13:00:00,unread,false
+019d0000-0002-7000-8000-000000000028,019d0000-0001-7000-8000-000000000004,GitHub Copilot Workspace: From Issue to Code,https://github.blog/copilot-workspace,"GitHub Copilot Workspace transforms issues into implementation plans and pull requests.
+
+It analyzes your codebase structure and proposes changes across multiple files. The workflow starts from a GitHub Issue: Copilot reads the issue description, examines the relevant code, and generates a step-by-step implementation plan.
+
+You can review and edit the plan before Copilot generates the actual code changes. Each change is presented as a diff, and you can accept, reject, or modify individual hunks.
+
+The key advantage over inline code completion is context awareness. Copilot Workspace understands the project structure, test patterns, and coding conventions. It generates not just the feature code but also corresponding tests and documentation updates.
+
+Currently in technical preview, Workspace is available for GitHub Copilot Enterprise subscribers.",2026-04-11 08:00:00,unread,false
+019d0000-0002-7000-8000-000000000029,019d0000-0001-7000-8000-000000000004,GitHub Actions: Larger Runners and GPU Support,https://github.blog/actions-gpu-runners,"GitHub Actions now supports GPU-accelerated runners for ML workloads. Combined with larger runner sizes up to 64 cores, CI/CD pipelines can handle compute-intensive tasks.",2026-04-10 10:00:00,unread,false
+019d0000-0002-7000-8000-000000000030,019d0000-0001-7000-8000-000000000004,Securing Your Supply Chain with GitHub Artifact Attestations,https://github.blog/artifact-attestations,"GitHub Artifact Attestations provide cryptographic proof of where and how your artifacts were built. Integrated with Sigstore, it enables verification without managing keys.",2026-04-09 07:00:00,unread,false
+019d0000-0002-7000-8000-000000000031,019d0000-0001-7000-8000-000000000004,GitHub Models: AI in Your Development Workflow,https://github.blog/github-models,"GitHub Models brings AI model experimentation directly into GitHub. Compare outputs from different models, test prompts in the playground, and deploy to Azure with one click.",2026-04-08 12:00:00,unread,true
+019d0000-0002-7000-8000-000000000032,019d0000-0001-7000-8000-000000000004,What's New in GitHub Issues: Sub-issues and Issue Types,https://github.blog/issues-sub-issues,"GitHub Issues now supports sub-issues for breaking down large tasks and custom issue types for better categorization. Combined with Projects, it provides a complete planning solution.",2026-04-07 09:00:00,unread,false
+019d0000-0002-7000-8000-000000000033,019d0000-0001-7000-8000-000000000004,GitHub Advanced Security: Code Scanning with CodeQL,https://github.blog/codeql-scanning,"CodeQL enables semantic code analysis that finds vulnerabilities traditional scanners miss. Write custom queries to enforce your organization's security policies.",2026-04-06 14:00:00,unread,false
+019d0000-0002-7000-8000-000000000034,019d0000-0001-7000-8000-000000000004,Passkeys on GitHub: The End of Passwords,https://github.blog/passkeys,"GitHub now supports passkeys as a primary authentication method. Backed by WebAuthn, passkeys are phishing-resistant and eliminate the need for passwords and 2FA codes.",2026-04-05 08:00:00,unread,false
+019d0000-0002-7000-8000-000000000035,019d0000-0001-7000-8000-000000000004,GitHub Merge Queue: Scaling CI for Large Teams,https://github.blog/merge-queue,"GitHub Merge Queue automatically groups pull requests and tests them together before merging. This prevents broken main branches in repositories with high commit velocity.",2026-04-04 11:00:00,read,false
+019d0000-0002-7000-8000-000000000036,019d0000-0001-7000-8000-000000000004,Introducing GitHub Copilot Extensions,https://github.blog/copilot-extensions,"GitHub Copilot Extensions allow third-party tools to integrate directly into the Copilot Chat experience. Build extensions that surface your tool's capabilities through natural language.",2026-04-03 15:00:00,unread,false
