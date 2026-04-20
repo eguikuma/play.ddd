@@ -55,9 +55,17 @@ class Screen
             while (true) {
                 $display->draw($this->layout->build());
 
+                if ($this->state->loading) {
+                    $this->state->executeFetch();
+
+                    continue;
+                }
+
                 $event = $this->terminal->events()->next();
 
                 if ($event === null) {
+                    usleep(10_000);
+
                     continue;
                 }
 

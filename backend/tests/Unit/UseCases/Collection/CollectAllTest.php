@@ -50,9 +50,10 @@ class CollectAllTest extends TestCase
         );
 
         $collectAll = new CollectAll($sourceRepository, $collectSource);
-        $executions = $collectAll->execute();
+        $result = $collectAll->execute();
 
-        $this->assertCount(2, $executions);
+        $this->assertCount(2, $result['executions']);
+        $this->assertSame(0, $result['failures']);
     }
 
     #[Test]
@@ -85,8 +86,51 @@ class CollectAllTest extends TestCase
         );
 
         $collectAll = new CollectAll($sourceRepository, $collectSource);
-        $executions = $collectAll->execute();
+        $result = $collectAll->execute();
 
-        $this->assertCount(1, $executions);
+        $this->assertCount(1, $result['executions']);
+    }
+
+    #[Test]
+    public function 収集に失敗したソースの件数が返される(): void
+    {
+        $sourceRepository = new InMemorySourceRepository;
+        $sourceRepository->save(
+            Source::add(new SourceName('Valid'), new SourceUrl('https://example.com/rss1'), SourceKind::Rss, new FetchInterval(60)),
+        );
+        $sourceRepository->save(
+            Source::add(new SourceName('Invalid'), new SourceUrl('https://example.com/rss2'), SourceKind::Rss, new FetchInterval(60)),
+        );
+
+        $fetcher = $this->createStub(ContentFetcher::class);
+        $fetcher->method('fetch')->willReturnCallback(function (string $url): string {
+            if ($url === 'https://example.com/rss2') {
+                throw new \RuntimeException('接続タイムアウト');
+            }
+
+            return '<rss>dummy</rss>';
+        });
+
+        $parser = $this->createStub(ContentParser::class);
+        $parser->method('parse')->willReturn([
+            new ParsedEntry('Article', 'https://example.com/article', 'Body', new \DateTimeImmutable),
+        ]);
+
+        $dispatcher = $this->createStub(EventDispatcher::class);
+
+        $collectSource = new CollectSource(
+            $sourceRepository,
+            new InMemoryArticleRepository,
+            new InMemoryFetchExecutionRepository,
+            $fetcher,
+            $parser,
+            $dispatcher,
+        );
+
+        $collectAll = new CollectAll($sourceRepository, $collectSource);
+        $result = $collectAll->execute();
+
+        $this->assertCount(1, $result['executions']);
+        $this->assertSame(1, $result['failures']);
     }
 }
