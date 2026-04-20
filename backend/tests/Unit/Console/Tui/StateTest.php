@@ -36,7 +36,7 @@ class StateTest extends TestCase
         $this->sourceRepository = new InMemorySourceRepository;
 
         $collectAll = $this->createStub(CollectAll::class);
-        $collectAll->method('execute')->willReturn([]);
+        $collectAll->method('execute')->willReturn(['executions' => [], 'failures' => 0]);
 
         $articles = new Articles(
             new ListUnreadArticles($this->articleRepository),
@@ -341,6 +341,94 @@ class StateTest extends TestCase
         $this->state->escape();
 
         $this->assertSame(Mode::Sources, $this->state->mode);
+    }
+
+    #[Test]
+    public function フェッチ操作でローディング状態に遷移する(): void
+    {
+        $this->state->fetch();
+
+        $this->assertTrue($this->state->loading);
+    }
+
+    #[Test]
+    public function フェッチ実行後にローディング状態が解除される(): void
+    {
+        $this->state->fetch();
+        $this->state->executeFetch();
+
+        $this->assertFalse($this->state->loading);
+    }
+
+    #[Test]
+    public function フェッチ実行後に成功通知が設定される(): void
+    {
+        $this->state->fetch();
+        $this->state->executeFetch();
+
+        $this->assertNotNull($this->state->notice);
+        $this->assertTrue($this->state->notice->success);
+        $this->assertSame('記事を収集しました', $this->state->notice->message);
+    }
+
+    #[Test]
+    public function フェッチ実行で失敗があると失敗通知が設定される(): void
+    {
+        $collectAll = $this->createStub(CollectAll::class);
+        $collectAll->method('execute')->willReturn(['executions' => [], 'failures' => 2]);
+
+        $articles = new Articles(
+            new ListUnreadArticles($this->articleRepository),
+            new MarkAsRead($this->articleRepository),
+            new BookmarkArticle($this->articleRepository),
+            new UnbookmarkArticle($this->articleRepository),
+        );
+
+        $sources = new Sources(
+            new AddSource($this->sourceRepository),
+            new ListSources($this->sourceRepository),
+            new RemoveSource($this->sourceRepository),
+            new PauseSource($this->sourceRepository),
+            new ResumeSource($this->sourceRepository),
+        );
+
+        $state = new State($articles, $sources, $collectAll);
+        $state->fetch();
+        $state->executeFetch();
+
+        $this->assertNotNull($state->notice);
+        $this->assertFalse($state->notice->success);
+        $this->assertSame('2件のソースで収集に失敗しました', $state->notice->message);
+    }
+
+    #[Test]
+    public function ソース一時停止で停止通知が設定される(): void
+    {
+        $this->state->browse();
+        $this->state->sources->add('https://example.com/feed', 'Example');
+        $this->state->sources->load();
+
+        $this->state->pause();
+
+        $this->assertNotNull($this->state->notice);
+        $this->assertTrue($this->state->notice->success);
+        $this->assertSame('追跡を停止しました', $this->state->notice->message);
+    }
+
+    #[Test]
+    public function ソース再開で再開通知が設定される(): void
+    {
+        $this->state->browse();
+        $this->state->sources->add('https://example.com/feed', 'Example');
+        $this->state->sources->load();
+        $this->state->pause();
+
+        $this->state->sources->load();
+        $this->state->pause();
+
+        $this->assertNotNull($this->state->notice);
+        $this->assertTrue($this->state->notice->success);
+        $this->assertSame('追跡を再開しました', $this->state->notice->message);
     }
 
     private function create(string $title): ReadableArticle

@@ -5,6 +5,7 @@ namespace Tests\Unit\Console\Tui;
 use App\Console\Tui\Articles;
 use App\Console\Tui\EventHandler;
 use App\Console\Tui\Mode;
+use App\Console\Tui\Notice;
 use App\Console\Tui\Sources;
 use App\Console\Tui\State;
 use App\Domain\Curation\Aggregates\ReadableArticle;
@@ -41,7 +42,7 @@ class EventHandlerTest extends TestCase
         $sourceRepository = new InMemorySourceRepository;
 
         $collectAll = $this->createStub(CollectAll::class);
-        $collectAll->method('execute')->willReturn([]);
+        $collectAll->method('execute')->willReturn(['executions' => [], 'failures' => 0]);
 
         $articles = new Articles(
             new ListUnreadArticles($this->repository),
@@ -387,6 +388,32 @@ class EventHandlerTest extends TestCase
 
         $this->assertSame(Mode::Help, $this->state->mode);
         $this->assertCount(1, $this->state->articles->items);
+    }
+
+    #[Test]
+    public function 期限切れの通知はキー操作でクリアされる(): void
+    {
+        $reflection = new \ReflectionClass(Notice::class);
+        $notice = $reflection->newInstanceWithoutConstructor();
+        $reflection->getProperty('message')->setValue($notice, 'テスト');
+        $reflection->getProperty('success')->setValue($notice, true);
+        $reflection->getProperty('createdAt')->setValue($notice, microtime(true) - 3.0);
+
+        $this->state->notice = $notice;
+
+        $this->handler->handle(CharKeyEvent::new('j'));
+
+        $this->assertNull($this->state->notice);
+    }
+
+    #[Test]
+    public function 期限内の通知はキー操作でクリアされない(): void
+    {
+        $this->state->notice = Notice::success('テスト');
+
+        $this->handler->handle(CharKeyEvent::new('j'));
+
+        $this->assertNotNull($this->state->notice);
     }
 
     private function create(string $title): ReadableArticle

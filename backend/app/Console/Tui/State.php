@@ -15,7 +15,9 @@ class State
 
     public ?string $filtering = null;
 
-    public string $notice = '';
+    public ?Notice $notice = null;
+
+    public bool $loading = false;
 
     public Articles $articles;
 
@@ -74,7 +76,6 @@ class State
 
         if ($this->mode === Mode::Sources) {
             $this->mode = Mode::Articles;
-            $this->notice = '';
             $this->articles->load($this->filtering);
 
             if ($this->query !== '') {
@@ -125,9 +126,9 @@ class State
 
             try {
                 $this->sources->add($this->sources->pending, $name);
-                $this->notice = '';
+                $this->notice = Notice::success('ソースを追加しました');
             } catch (\DomainException|\InvalidArgumentException $e) {
-                $this->notice = $e->getMessage();
+                $this->notice = Notice::failure($e->getMessage());
             }
 
             $this->prompt->clear();
@@ -189,7 +190,6 @@ class State
     {
         $this->preview->unfocus();
         $this->mode = Mode::Sources;
-        $this->notice = '';
         $this->sources->load();
     }
 
@@ -204,9 +204,8 @@ class State
 
         try {
             $this->articles->mark();
-            $this->notice = '';
         } catch (\DomainException|\InvalidArgumentException $e) {
-            $this->notice = $e->getMessage();
+            $this->notice = Notice::failure($e->getMessage());
 
             return;
         }
@@ -231,9 +230,8 @@ class State
 
         try {
             $this->articles->bookmark();
-            $this->notice = '';
         } catch (\DomainException|\InvalidArgumentException $e) {
-            $this->notice = $e->getMessage();
+            $this->notice = Notice::failure($e->getMessage());
 
             return;
         }
@@ -246,12 +244,22 @@ class State
     }
 
     /**
-     * 全アクティブソースから記事を収集し、記事一覧を再読み込みする
+     * ローディング状態に遷移し、フェッチの実行を Screen に委譲する
      */
     public function fetch(): void
     {
-        $this->notice = '';
-        $this->collectAll->execute();
+        $this->loading = true;
+    }
+
+    /**
+     * 全アクティブソースから記事を収集し、記事一覧を再読み込みする
+     *
+     * Screen のイベントループからローディング表示後に呼び出される
+     */
+    public function executeFetch(): void
+    {
+        $result = $this->collectAll->execute();
+
         $this->articles->load($this->filtering);
 
         if ($this->query !== '') {
@@ -259,6 +267,13 @@ class State
         }
 
         $this->preview->reset();
+        $this->loading = false;
+
+        if ($result['failures'] > 0) {
+            $this->notice = Notice::failure("{$result['failures']}件のソースで収集に失敗しました");
+        } else {
+            $this->notice = Notice::success('記事を収集しました');
+        }
     }
 
     /**
@@ -272,9 +287,9 @@ class State
 
         try {
             $this->sources->remove();
-            $this->notice = '';
+            $this->notice = Notice::success('ソースを削除しました');
         } catch (\DomainException|\InvalidArgumentException $e) {
-            $this->notice = $e->getMessage();
+            $this->notice = Notice::failure($e->getMessage());
 
             return;
         }
@@ -292,10 +307,13 @@ class State
         }
 
         try {
+            $active = $this->sources->selection()->isActive();
             $this->sources->pause();
-            $this->notice = '';
+            $this->notice = $active
+                ? Notice::success('追跡を停止しました')
+                : Notice::success('追跡を再開しました');
         } catch (\DomainException|\InvalidArgumentException $e) {
-            $this->notice = $e->getMessage();
+            $this->notice = Notice::failure($e->getMessage());
 
             return;
         }

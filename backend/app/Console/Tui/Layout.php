@@ -61,8 +61,16 @@ class Layout
             ->constraints(Constraint::min(0), Constraint::length(3))
             ->widgets($this->panels(), $this->status());
 
+        if ($this->state->loading) {
+            return CompositeWidget::fromWidgets($base, $this->loading());
+        }
+
         if ($this->state->mode === Mode::Help) {
             return CompositeWidget::fromWidgets($base, $this->help());
+        }
+
+        if ($this->state->notice !== null) {
+            return CompositeWidget::fromWidgets($base, $this->toast());
         }
 
         return $base;
@@ -182,7 +190,13 @@ class Layout
      */
     private function preview(): Widget
     {
-        $widget = $this->state->articles->selection() !== null
+        $browsing = in_array($this->state->mode, [
+            Mode::Sources,
+            Mode::SourceAddUrl,
+            Mode::SourceAddName,
+        ], true);
+
+        $widget = (! $browsing && $this->state->articles->selection() !== null)
             ? $this->content()
             : ParagraphWidget::fromString('');
 
@@ -329,14 +343,14 @@ class Layout
 
         $content = ParagraphWidget::fromText(Text::fromLines(...$lines));
 
-        $modal = BlockWidget::default()
+        $block = BlockWidget::default()
             ->borders(Borders::ALL)
             ->borderType(BorderType::Rounded)
             ->borderStyle(Style::default()->fg(AnsiColor::Cyan))
             ->titles(Title::fromString(' キーバインド '))
             ->widget($content);
 
-        return BufferWidget::new(function (BufferContext $context) use ($modal): void {
+        return BufferWidget::new(function (BufferContext $context) use ($block): void {
             $area = $context->area;
 
             $context->buffer->setStyle(null, Style::default()->fg(AnsiColor::DarkGray)->removeModifier(Modifier::REVERSED));
@@ -352,14 +366,87 @@ class Layout
                 max(1, $area->height - $marginTop - $marginBottom),
             );
 
-            $context->draw($modal, $inner);
+            $context->draw($block, $inner);
+        });
+    }
+
+    /**
+     * ローディングスピナーを画面中央にオーバーレイ表示する
+     */
+    private function loading(): Widget
+    {
+        $content = ParagraphWidget::fromText(Text::fromLines(
+            new Line(
+                [Span::fromString('⟳')->style(Style::default()->fg(AnsiColor::Cyan))],
+                HorizontalAlignment::Center,
+            ),
+        ));
+
+        $block = BlockWidget::default()
+            ->borders(Borders::ALL)
+            ->borderType(BorderType::Rounded)
+            ->borderStyle(Style::default()->fg(AnsiColor::Cyan))
+            ->widget($content);
+
+        return BufferWidget::new(function (BufferContext $context) use ($block): void {
+            $area = $context->area;
+
+            $context->buffer->setStyle(null, Style::default()->fg(AnsiColor::DarkGray)->removeModifier(Modifier::REVERSED));
+
+            $spinnerWidth = 7;
+            $spinnerHeight = 3;
+            $centerX = $area->position->x + (int) floor(($area->width - $spinnerWidth) / 2);
+            $centerY = $area->position->y + (int) floor(($area->height - self::STATUS - $spinnerHeight) / 2);
+
+            $inner = Area::fromScalars($centerX, $centerY, $spinnerWidth, $spinnerHeight);
+
+            $context->draw($block, $inner);
+        });
+    }
+
+    /**
+     * 通知メッセージを右下にオーバーレイ表示する
+     */
+    private function toast(): Widget
+    {
+        $notice = $this->state->notice;
+        $color = $notice->success ? AnsiColor::Green : AnsiColor::Red;
+
+        $content = ParagraphWidget::fromText(Text::fromLines(
+            Line::fromSpans(
+                Span::fromString($notice->message)->style(Style::default()->fg($color)),
+            ),
+        ));
+
+        $block = BlockWidget::default()
+            ->borders(Borders::ALL)
+            ->borderType(BorderType::Rounded)
+            ->borderStyle(Style::default()->fg($color))
+            ->widget($content);
+
+        $toastWidth = min($this->width - 2, mb_strwidth($notice->message) + 4);
+        $toastHeight = 3;
+
+        return BufferWidget::new(function (BufferContext $context) use ($block, $toastWidth, $toastHeight): void {
+            $area = $context->area;
+
+            $inner = Area::fromScalars(
+                max(0, $area->position->x + $area->width - $toastWidth - 1),
+                max(0, $area->position->y + $area->height - $toastHeight),
+                $toastWidth,
+                $toastHeight,
+            );
+
+            $context->buffer->setStyle($inner, Style::default()->removeModifier(Modifier::REVERSED));
+
+            $context->draw($block, $inner);
         });
     }
 
     /**
      * 画面下部のステータスバーを構築する
      *
-     * プロンプト入力中はモード名とカーソルを表示し、エラー時はボーダーを赤くする
+     * プロンプト入力中はモード名とカーソルを表示する
      */
     private function status(): Widget
     {
@@ -376,15 +463,12 @@ class Layout
             $content = ParagraphWidget::fromString($this->state->prompt->value.'▌');
         } else {
             $label = '';
-            $error = $this->state->notice !== '';
             $content = ParagraphWidget::fromString('');
         }
 
-        $border = match (true) {
-            $prompting => Style::default()->fg(AnsiColor::Cyan),
-            $error ?? false => Style::default()->fg(AnsiColor::Red),
-            default => Style::default()->fg(AnsiColor::DarkGray),
-        };
+        $border = $prompting
+            ? Style::default()->fg(AnsiColor::Cyan)
+            : Style::default()->fg(AnsiColor::DarkGray);
 
         $block = BlockWidget::default()
             ->borders(Borders::ALL)

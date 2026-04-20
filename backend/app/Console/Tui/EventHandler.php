@@ -19,6 +19,10 @@ class EventHandler
      */
     public function handle(object $event): bool
     {
+        if ($this->state->notice?->expired()) {
+            $this->state->notice = null;
+        }
+
         if ($this->state->prompting()) {
             return $this->prompt($event);
         }
@@ -53,7 +57,6 @@ class EventHandler
                 }
 
                 $this->state->articles->move($delta);
-                $this->state->notice = '';
                 $this->state->preview->reset();
             }),
             Action::Left => $this->dispatch(fn () => $this->state->preview->unfocus()),
