@@ -15,22 +15,34 @@ class Preview
 
     public bool $focused = false;
 
+    /**
+     * スクロール位置を上下に移動する（0 から limit の範囲内に制限される）
+     */
     public function scroll(int $delta): void
     {
         $this->scroll = max(0, min($this->limit, $this->scroll + $delta));
     }
 
+    /**
+     * プレビューにフォーカスし、スクロール位置を先頭に戻す
+     */
     public function focus(): void
     {
         $this->focused = true;
         $this->scroll = 0;
     }
 
+    /**
+     * プレビューのフォーカスを解除する
+     */
     public function unfocus(): void
     {
         $this->focused = false;
     }
 
+    /**
+     * スクロール・上限・フォーカスを全て初期値に戻す
+     */
     public function reset(): void
     {
         $this->scroll = 0;

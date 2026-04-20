@@ -30,11 +30,17 @@ class Articles
         $this->widget = new ListState(0, null);
     }
 
+    /**
+     * カーソル位置の記事を返す
+     */
     public function selection(): ?ReadableArticle
     {
         return $this->items[$this->cursor] ?? null;
     }
 
+    /**
+     * カーソルを上下に移動する
+     */
     public function move(int $delta): void
     {
         $count = count($this->items);
@@ -47,6 +53,9 @@ class Articles
         $this->widget->selected = $this->cursor;
     }
 
+    /**
+     * 選択中の記事を既読にする
+     */
     public function mark(): ReadableArticle
     {
         $article = $this->selection();
@@ -55,6 +64,9 @@ class Articles
         return $article;
     }
 
+    /**
+     * 選択中の記事のブックマーク状態を切り替える
+     */
     public function bookmark(): ReadableArticle
     {
         $article = $this->selection();
@@ -68,6 +80,9 @@ class Articles
         return $article;
     }
 
+    /**
+     * 未読記事を再読み込みし、カーソル位置を補正する
+     */
     public function load(?string $filtering): void
     {
         $this->items = $this->listUnread->execute($filtering);
@@ -99,6 +114,9 @@ class Articles
         $this->widget->selected = count($this->items) > 0 ? 0 : null;
     }
 
+    /**
+     * ListWidget に渡すための描画状態を返す
+     */
     public function widget(): ListState
     {
         return $this->widget;

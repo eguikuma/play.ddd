@@ -51,6 +51,9 @@ class Layout
         private readonly int $height,
     ) {}
 
+    /**
+     * 現在の State に基づいてフレーム全体の Widget ツリーを構築する
+     */
     public function build(): Widget
     {
         $base = GridWidget::default()
@@ -65,6 +68,9 @@ class Layout
         return $base;
     }
 
+    /**
+     * リストパネルとプレビューパネルを横並びで配置する
+     */
     private function panels(): Widget
     {
         return GridWidget::default()
@@ -73,6 +79,9 @@ class Layout
             ->widgets($this->list(), $this->preview());
     }
 
+    /**
+     * 現在のモードに応じて記事一覧またはソース一覧を返す
+     */
     private function list(): Widget
     {
         if ($this->state->mode === Mode::Sources
@@ -84,6 +93,9 @@ class Layout
         return $this->articles();
     }
 
+    /**
+     * 記事一覧パネルの Widget を構築する
+     */
     private function articles(): Widget
     {
         $badge = $this->state->filtering !== null ? " [{$this->state->filtering}]" : '';
@@ -125,6 +137,9 @@ class Layout
             );
     }
 
+    /**
+     * ソース一覧パネルの Widget を構築する
+     */
     private function sources(): Widget
     {
         $count = count($this->state->sources->items);
@@ -162,6 +177,9 @@ class Layout
             );
     }
 
+    /**
+     * 記事プレビューパネルの Widget を構築する
+     */
     private function preview(): Widget
     {
         $widget = $this->state->articles->selection() !== null
@@ -272,6 +290,9 @@ class Layout
             ->widgets(...array_map(fn (array $section) => $section[1], $sections));
     }
 
+    /**
+     * キーバインド一覧のヘルプモーダルを構築する
+     */
     private function help(): Widget
     {
         $fromSources = $this->state->origin() === Mode::Sources;
@@ -335,6 +356,11 @@ class Layout
         });
     }
 
+    /**
+     * 画面下部のステータスバーを構築する
+     *
+     * プロンプト入力中はモード名とカーソルを表示し、エラー時はボーダーを赤くする
+     */
     private function status(): Widget
     {
         $prompting = $this->state->prompting();

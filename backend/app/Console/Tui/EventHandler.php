@@ -15,7 +15,7 @@ class EventHandler
     public function __construct(private readonly State $state) {}
 
     /**
-     * @return bool false で TUI を終了する
+     * キーイベントを受け取り、アクションに変換して State に委譲する
      */
     public function handle(object $event): bool
     {
@@ -37,6 +37,9 @@ class EventHandler
         };
     }
 
+    /**
+     * 記事一覧モードで受け付けるアクションをディスパッチする
+     */
     private function articles(?Action $action): bool
     {
         return match ($action) {
@@ -71,6 +74,9 @@ class EventHandler
         };
     }
 
+    /**
+     * ソース一覧モードで受け付けるアクションをディスパッチする
+     */
     private function sources(?Action $action): bool
     {
         return match ($action) {
@@ -87,6 +93,9 @@ class EventHandler
         };
     }
 
+    /**
+     * ヘルプモードで受け付けるアクションをディスパッチする
+     */
     private function help(?Action $action): bool
     {
         return match ($action) {
@@ -97,7 +106,7 @@ class EventHandler
     }
 
     /**
-     * @return bool false で TUI を終了する
+     * テキスト入力を受け付ける
      */
     private function prompt(object $event): bool
     {
@@ -140,6 +149,9 @@ class EventHandler
         }
     }
 
+    /**
+     * アクションを実行し、TUI を継続する
+     */
     private function dispatch(\Closure $action): bool
     {
         $action();

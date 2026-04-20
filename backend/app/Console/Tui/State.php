@@ -54,6 +54,9 @@ class State
         $this->prompt = new Prompt;
     }
 
+    /**
+     * テキスト入力を受け付けるモードかどうかを判定する
+     */
     public function prompting(): bool
     {
         return in_array($this->mode, [
@@ -64,6 +67,13 @@ class State
         ], true);
     }
 
+    /**
+     * Esc キーに応じた状態遷移を行う
+     *
+     * ヘルプ → 元のモードへ復帰
+     * プレビューフォーカス中 → フォーカス解除
+     * ソース一覧 → 記事一覧へ復帰（検索クエリを再適用）
+     */
     public function escape(): void
     {
         if ($this->mode === Mode::Help) {
@@ -89,6 +99,14 @@ class State
         }
     }
 
+    /**
+     * プロンプト入力を確定し、モードに応じた処理を実行する
+     *
+     * ArticleSearch → クエリを保存して記事を絞り込む
+     * ArticleLabelFilter → ラベルフィルタを適用して記事を再読み込みする
+     * SourceAddUrl → 入力URLを保持して名前入力へ進む
+     * SourceAddName → ソースを追加してソース一覧を再読み込みする
+     */
     public function submit(): void
     {
         if ($this->mode === Mode::ArticleSearch) {
@@ -135,6 +153,9 @@ class State
         }
     }
 
+    /**
+     * プロンプト入力をキャンセルし、直前のモードに戻る
+     */
     public function cancel(): void
     {
         $this->prompt->clear();
@@ -147,6 +168,9 @@ class State
         };
     }
 
+    /**
+     * 記事検索モードに遷移し、前回のクエリをプロンプトに復元する
+     */
     public function search(): void
     {
         $this->preview->unfocus();
@@ -154,6 +178,9 @@ class State
         $this->prompt->value = $this->query;
     }
 
+    /**
+     * ラベルフィルタ入力モードに遷移し、現在のフィルタ値をプロンプトに復元する
+     */
     public function filter(): void
     {
         $this->preview->unfocus();
@@ -161,6 +188,9 @@ class State
         $this->prompt->value = $this->filtering ?? '';
     }
 
+    /**
+     * ソース追加フローを開始し、URL入力モードに遷移する
+     */
     public function add(): void
     {
         $this->mode = Mode::SourceAddUrl;
@@ -168,6 +198,9 @@ class State
         $this->sources->pending = '';
     }
 
+    /**
+     * ソース一覧モードに切り替え、ソースを再読み込みする
+     */
     public function browse(): void
     {
         $this->preview->unfocus();
@@ -176,6 +209,9 @@ class State
         $this->sources->load();
     }
 
+    /**
+     * 選択中の記事を既読にし、記事一覧を再読み込みする
+     */
     public function mark(): void
     {
         if ($this->articles->selection() === null) {
@@ -200,6 +236,9 @@ class State
         $this->preview->reset();
     }
 
+    /**
+     * 選択中の記事のブックマーク状態を切り替え、記事一覧を再読み込みする
+     */
     public function bookmark(): void
     {
         if ($this->articles->selection() === null) {
@@ -222,6 +261,9 @@ class State
         }
     }
 
+    /**
+     * 全アクティブソースから記事を収集し、記事一覧を再読み込みする
+     */
     public function fetch(): void
     {
         $this->notice = '';
@@ -235,6 +277,9 @@ class State
         $this->preview->reset();
     }
 
+    /**
+     * 選択中のソースを削除し、ソース一覧を再読み込みする
+     */
     public function remove(): void
     {
         if ($this->sources->selection() === null) {
@@ -253,6 +298,9 @@ class State
         $this->sources->load();
     }
 
+    /**
+     * 選択中のソースの追跡状態を切り替え、ソース一覧を再読み込みする
+     */
     public function pause(): void
     {
         if ($this->sources->selection() === null) {
@@ -271,6 +319,9 @@ class State
         $this->sources->load();
     }
 
+    /**
+     * ヘルプモードの表示を切り替える
+     */
     public function help(): void
     {
         if ($this->mode === Mode::Help) {
@@ -281,6 +332,9 @@ class State
         }
     }
 
+    /**
+     * ヘルプモードに入る前のモードを返す
+     */
     public function origin(): Mode
     {
         return $this->origin;

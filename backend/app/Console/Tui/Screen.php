@@ -66,6 +66,12 @@ class Screen
         $this->handler = new EventHandler($this->state);
     }
 
+    /**
+     * メインイベントループを開始し、TUI を終了するまでブロックする
+     *
+     * 描画 → イベント取得 → ハンドラ委譲 のサイクルを繰り返す
+     * EventHandler が false を返すとループを抜けて正常終了する
+     */
     public function run(): int
     {
         $backend = PhpTermBackend::new($this->terminal);

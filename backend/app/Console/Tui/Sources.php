@@ -35,6 +35,9 @@ class Sources
         $this->widget = new ListState(0, null);
     }
 
+    /**
+     * カーソルを上下に移動する
+     */
     public function move(int $delta): void
     {
         $count = count($this->items);
@@ -47,6 +50,9 @@ class Sources
         $this->widget->selected = $this->cursor;
     }
 
+    /**
+     * ソース一覧を再読み込みし、カーソル位置を補正する
+     */
     public function load(): void
     {
         $this->items = $this->listSources->execute();
@@ -55,11 +61,17 @@ class Sources
         $this->widget->selected = $count > 0 ? $this->cursor : null;
     }
 
+    /**
+     * カーソル位置のソースを返す
+     */
     public function selection(): ?Source
     {
         return $this->items[$this->cursor] ?? null;
     }
 
+    /**
+     * 選択中のソースを削除する
+     */
     public function remove(): Source
     {
         $source = $this->selection();
@@ -68,6 +80,9 @@ class Sources
         return $source;
     }
 
+    /**
+     * 選択中のソースの追跡状態を切り替える
+     */
     public function pause(): Source
     {
         $source = $this->selection();
@@ -81,6 +96,9 @@ class Sources
         return $source;
     }
 
+    /**
+     * 新しいソースを追加する
+     */
     public function add(string $url, ?string $name): Source
     {
         return $this->addSource->execute(
@@ -91,6 +109,9 @@ class Sources
         );
     }
 
+    /**
+     * ListWidget に渡すための描画状態を返す
+     */
     public function widget(): ListState
     {
         return $this->widget;
