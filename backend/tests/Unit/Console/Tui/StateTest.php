@@ -129,7 +129,7 @@ class StateTest extends TestCase
         $this->state->mode = Mode::ArticleSearch;
         $this->state->prompt->value = 'laravel';
 
-        $this->state->confirm();
+        $this->state->submit();
 
         $this->assertSame(Mode::Articles, $this->state->mode);
         $this->assertSame('laravel', $this->state->query);
@@ -171,12 +171,12 @@ class StateTest extends TestCase
 
         $this->state->mode = Mode::ArticleSearch;
         $this->state->prompt->value = 'laravel';
-        $this->state->confirm();
+        $this->state->submit();
         $this->assertCount(1, $this->state->articles->items);
 
         $this->state->mode = Mode::ArticleSearch;
         $this->state->prompt->value = '';
-        $this->state->confirm();
+        $this->state->submit();
 
         $this->assertSame(Mode::Articles, $this->state->mode);
         $this->assertSame('', $this->state->query);

@@ -41,7 +41,7 @@ enum Action
 
     case Help;
 
-    case Confirm;
+    case Submit;
 
     case Cancel;
 

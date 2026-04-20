@@ -186,7 +186,7 @@ class BindingsTest extends TestCase
     {
         $action = Bindings::prompt(CodedKeyEvent::new(KeyCode::Enter));
 
-        $this->assertSame(Action::Confirm, $action);
+        $this->assertSame(Action::Submit, $action);
     }
 
     #[Test]

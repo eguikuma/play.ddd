@@ -109,9 +109,9 @@ class EventHandler
 
         if ($action !== null) {
             match ($action) {
-                Action::Confirm => $this->state->confirm(),
+                Action::Submit => $this->state->submit(),
                 Action::Cancel => $this->state->cancel(),
-                Action::Delete => $this->input(fn () => $this->state->prompt->delete()),
+                Action::Delete => $this->type(fn () => $this->state->prompt->delete()),
                 default => null,
             };
 
@@ -119,7 +119,7 @@ class EventHandler
         }
 
         if ($event instanceof CharKeyEvent) {
-            $this->input(fn () => $this->state->prompt->type($event->char));
+            $this->type(fn () => $this->state->prompt->type($event->char));
         }
 
         return true;
@@ -128,7 +128,7 @@ class EventHandler
     /**
      * プロンプト入力操作の実行後にインクリメンタル検索を更新する
      */
-    private function input(\Closure $action): void
+    private function type(\Closure $action): void
     {
         $action();
 

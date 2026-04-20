@@ -89,7 +89,7 @@ class State
         }
     }
 
-    public function confirm(): void
+    public function submit(): void
     {
         if ($this->mode === Mode::ArticleSearch) {
             $this->query = $this->prompt->value;

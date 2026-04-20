@@ -74,7 +74,7 @@ class Bindings
 
         if ($event instanceof CodedKeyEvent) {
             return match ($event->code) {
-                KeyCode::Enter => Action::Confirm,
+                KeyCode::Enter => Action::Submit,
                 KeyCode::Esc => Action::Cancel,
                 KeyCode::Backspace => Action::Delete,
                 default => null,
